@@ -31,5 +31,5 @@ python train.py --epoch 100 --batch-size 4 --learning-rate 0.001
 
 # NewLearn에서 데이터 세트 준비
 
-Newlearn 는 컴퓨터 비전을 위한 데이터 세트의 관리, 전처리, 증강 및 버전 관리를 원활하게 만듭니다.
-Newlearn에서 이미지를 업로드, 전처리, 라벨링, 훈련을 진행하세요
+Newlearn는 컴퓨터 비전을 위한 데이터 세트의 관리, 전처리, 증강 및 버전 관리를 원활하게 만듭니다.  
+Newlearn [here](https://newlearn.ai/)에서 이미지를 업로드, 전처리, 라벨링, 훈련을 진행하세요
