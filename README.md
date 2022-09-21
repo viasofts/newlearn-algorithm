@@ -1,12 +1,14 @@
-# YOLOv5
+# NewLearn 알고리즘
 
-## 1)설치
+## YOLOv5
+
+### 1)설치
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 2)데이터셋 준비
+### 2)데이터셋 준비
 
 1. [Newlearn](https://newlearn.ai/)에서 데이터 업로드, 전처리, 라벨링을 진행하고 데이터 세트를 다운을 진행
 2. 훈련 데이터세트 중 이미지는 data/train/images, 라벨데이터는 daya/train/labels에 복사
@@ -20,7 +22,7 @@ nc: 2
 names: [CAR, NA]
 ```
 
-## 2)훈련
+### 2)훈련
 
 1. train.py 실행
 
