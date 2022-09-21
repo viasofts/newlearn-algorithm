@@ -28,4 +28,4 @@ names: [CAR, NA]
 python train.py --epoch 100 --batch-size 4 --learning-rate 0.001
 ```
 
-![logo](https://user-images.githubusercontent.com/77031838/191428086-15ace186-d667-46e4-a3c5-738fb4f1c759.png | width=500)
+<img src="https://user-images.githubusercontent.com/77031838/191428086-15ace186-d667-46e4-a3c5-738fb4f1c759.png" width="500" height="78" />
