@@ -14,8 +14,8 @@ pip install -r requirements.txt
 4. data/data.yaml 훈련과 검증 데이터 경로와 훈련하고자 하는 라벨을 설정, nc는 라벨개수 +1로 설정, names의 마지막 값은 NA로 설정
 
 ```bash
-train: ./data/train
-val: ./daya/test
+train:  data/train
+val: data/test
 nc: 2
 names: [CAR, NA]
 ```
