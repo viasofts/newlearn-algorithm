@@ -27,5 +27,5 @@ names: [CAR, NA]
 1. train.py 실행
 
 ```bash
-python train.py --epoch 100 --batch-size 4 --learning-rate 0.001
+python train.py --epoch 100 --batch-size 4 --learning-rate 0.001 --algorithm yolov5
 ```
