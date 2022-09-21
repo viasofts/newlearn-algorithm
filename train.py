@@ -53,7 +53,6 @@ class Yolov5:
         # workers=8,
         project=None,
         data_set_id=None,
-        gpu_server_id=None,
         root_dir=None,
         learning_rate=None,
         adam=None,
@@ -79,11 +78,14 @@ class Yolov5:
         # self.workers = workers
         self.project = project
         self.data_set_id = data_set_id
-        self.gpu_server_id = gpu_server_id
-        self.root_dir = root_dir
+
         self.learning_rate = learning_rate
         self.adam = False
         self.schedule_id = schedule_id
+        if root_dir == None:
+            self.root_dir = os.getcwd()
+        else:
+            self.root_dir = root_dir
         # self.entity = entity
         # self.name = name
         # self.bbox_interval = bbox_interval
@@ -96,7 +98,7 @@ class Yolov5:
         save_dir, epochs, batch_size, total_batch_size, weights, rank = Path(opt.save_dir), opt.epochs, opt.batch_size, opt.total_batch_size, opt.weights, opt.global_rank
 
         # Directories
-        wdir = Path(os.path.join(self.root_dir, "data", self.gpu_server_id)) / "weights"
+        wdir = Path(os.path.join(self.root_dir, "data")) / "weights"
         wdir.mkdir(parents=True, exist_ok=True)  # make dir
         last = os.path.join(wdir, "last.pt")
         best = os.path.join(wdir, "best.pt")
@@ -683,3 +685,41 @@ class Yolov5:
             # Plot results
             plot_evolution(yaml_file)
             print(f"Hyperparameter evolution complete. Best results saved as: {yaml_file}\n" f"Command to train a new model with these hyperparameters: $ python train.py --hyp {yaml_file}")
+
+
+def parse_opt():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--epochs", type=int, default=300)
+    parser.add_argument("--batch-size", type=int, default=4, help="total batch size for all GPUs")
+    parser.add_argument("--learning-rate", type=float, default=0.01, help="total batch size for all GPUs")
+    opt = parser.parse_args()
+
+    return opt
+
+if __name__ == "__main__":
+    opt = parse_opt()
+    
+    data = os.path.join(os.getcwd(), "data/data.yaml")
+    hyp = os.path.join(os.getcwd(), "data/hyp.scratch.yaml")
+             
+    weights = os.path.join(os.getcwd(), "daya", "yolov5s.pt")  # pretrained 가중치
+
+    # Yolov5 네트워크가 저장된 confing 파일
+    cfg = os.path.join(os.getcwd(), "yolov5", "yolov5s.yaml")
+
+    project = os.path.join("data", "run", "train")  # 훈련 결과를 저장할 폴더
+
+    model = Yolov5(
+        epochs=opt.epochs, 
+        batch_size=opt.batch_size, 
+        data=data, 
+        weights=weights, 
+        cfg=cfg, 
+        hyp=hyp, 
+        project=project, 
+        learning_rate=opt.learning_rate
+    )
+    
+    model.main()
+
+

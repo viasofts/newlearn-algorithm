@@ -1,0 +1,4 @@
+train: ./data/train
+val: ./daya/test
+nc: 2
+names: [CAR, NA]
