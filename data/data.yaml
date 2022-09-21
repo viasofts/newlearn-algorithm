@@ -1,4 +1,4 @@
-train: ./data/train
-val: ./daya/test
+train: data/train
+val: data/test
 nc: 2
 names: [CAR, NA]

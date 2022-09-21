@@ -23,7 +23,7 @@ from tqdm import tqdm
 import time
 import test  # import test.py to get mAP after each epoch
 
-from yolov5.yolo import Model
+from models.yolo import Model
 from utils.autoanchor import check_anchors
 from utils.datasets import create_dataloader
 from utils.general import labels_to_class_weights, increment_path, labels_to_image_weights, init_seeds, fitness, strip_optimizer, get_latest_run, check_dataset, check_file, check_git_status, check_img_size, check_requirements, print_mutation, set_logging, one_cycle, colorstr
@@ -691,7 +691,8 @@ def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=300)
     parser.add_argument("--batch-size", type=int, default=4, help="total batch size for all GPUs")
-    parser.add_argument("--learning-rate", type=float, default=0.01, help="total batch size for all GPUs")
+    parser.add_argument("--learning-rate", type=float, default=0.01)
+    parser.add_argument("--algorithm", type=str, default="yolov5")
     opt = parser.parse_args()
 
     return opt
@@ -702,10 +703,10 @@ if __name__ == "__main__":
     data = os.path.join(os.getcwd(), "data/data.yaml")
     hyp = os.path.join(os.getcwd(), "data/hyp.scratch.yaml")
              
-    weights = os.path.join(os.getcwd(), "daya", "yolov5s.pt")  # pretrained 가중치
+    weights = os.path.join(os.getcwd(), "data", "yolov5s.pt")  # pretrained 가중치
 
     # Yolov5 네트워크가 저장된 confing 파일
-    cfg = os.path.join(os.getcwd(), "yolov5", "yolov5s.yaml")
+    cfg = os.path.join(os.getcwd(), "models", "yolov5s.yaml")
 
     project = os.path.join("data", "run", "train")  # 훈련 결과를 저장할 폴더
 
