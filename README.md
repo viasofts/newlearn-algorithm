@@ -1,5 +1,3 @@
-# NewLearn 알고리즘
-
 # YOLOv5
 
 ## 1)설치
