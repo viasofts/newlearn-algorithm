@@ -1,6 +1,6 @@
 # NewLearn 알고리즘
 
-This directory contains YOLOv5 software developed by Ultralytics LLC, and is freely available for redistribution under the GPL-3.0 license. For more information please visit https://github.com/ultralytics/yolov5.
+이 디렉토리에는 Ultralytics LLC에서 개발한 YOLOv5 소프트웨어가 포함되어 있으며 GPL-3.0 라이선스에 따라 무료로 재배포할 수 있습니다. 자세한 내용은 https://github.com/ultralytics/yolov5 참조하세요.
 
 ## YOLOv5
 
