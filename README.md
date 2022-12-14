@@ -37,11 +37,11 @@ python train.py --epoch 100 --batch-size 4 --learning-rate 0.001 --algorithm yol
 1. detect.py 카메라 검증
 
 ```bash
-python detect.py --weights data/yolov5s.pt --source 0
+python detect.py --weights data/yolov7.pt --source 0
 ```
 
 2. detect.py 비디오 검증
 
 ```bash
-python detect.py --weights data/yolov5s.pt --source test.mp4 --view-img
+python detect.py --weights data/yolov7.pt --conf 0.25 --img-size 640 --source video.mp4 --view-img
 ```

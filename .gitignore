@@ -19,6 +19,7 @@ data/weights
 *.recipe
 *.dll
 *.exe
+*.pt
 #/accounts/migrations
 #/board/migrations
 #/project/migrations
