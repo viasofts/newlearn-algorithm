@@ -7,9 +7,9 @@ import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
 
-from models.experimental import attempt_load
-from utils.datasets import LoadStreams, LoadImages
-from utils.general import (
+from yolov7_models.experimental import attempt_load
+from yolov7_utils.datasets import LoadStreams, LoadImages
+from yolov7_utils.general import (
     check_img_size,
     check_requirements,
     check_imshow,
@@ -21,8 +21,8 @@ from utils.general import (
     set_logging,
     increment_path,
 )
-from utils.plots import plot_one_box
-from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
+from yolov7_utils.plots import plot_one_box
+from yolov7_utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
 
 def detect(save_img=False):
