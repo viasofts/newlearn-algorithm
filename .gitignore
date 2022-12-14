@@ -9,6 +9,8 @@ data/test/images
 data/test/labels
 data/run
 data/weights
+run
+*.mp4
 *.zip
 *.exe
 *.dll

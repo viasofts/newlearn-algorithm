@@ -904,7 +904,7 @@ def parse_opt():
     parser.add_argument("--epochs", type=int, default=300)
     parser.add_argument("--batch-size", type=int, default=4, help="total batch size for all GPUs")
     parser.add_argument("--learning-rate", type=float, default=0.01)
-    parser.add_argument("--algorithm", type=str, default="yolov5")
+    parser.add_argument("--algorithm", type=str, default="yolov7")
     opt = parser.parse_args()
 
     return opt
