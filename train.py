@@ -422,7 +422,7 @@ class Yolov5:
                 "batch",
                 "time",
             )
-            pbar = None
+
             if rank in [-1, 0]:
                 print("------pbar")
                 pbar = tqdm(temp_pbar, total=nb)  # progress bar
@@ -703,7 +703,7 @@ class Yolov5:
         opt.global_rank = int(os.environ["RANK"]) if "RANK" in os.environ else -1
 
         set_logging(opt.global_rank)
-
+        print(opt.global_rank)
         # if opt.global_rank in [-1, 0]:
         #    check_git_status()
         # check_requirements()
