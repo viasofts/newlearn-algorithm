@@ -139,6 +139,7 @@ class Yolov5:
         with open(hyp_yaml_path, "w") as f:
             yaml.dump(hyp, f, sort_keys=False)
         with open(opt_yaml_path, "w") as f:
+
             yaml.dump(vars(opt), f, sort_keys=False)
 
         # Configure
@@ -859,7 +860,6 @@ def parse_opt():
     parser.add_argument("--learning-rate", type=float, default=0.01)
     parser.add_argument("--algorithm", type=str, default="yolov5")
     parser.add_argument("--local_rank", type=int, default=-1, help="DDP parameter, do not modify")
-    parser.add_argument("--device", default="", help="cuda device, i.e. 0 or 0,1,2,3 or cpu")
     opt = parser.parse_args()
 
     return opt
@@ -890,4 +890,3 @@ if __name__ == "__main__":
     )
 
     model.main()
-
