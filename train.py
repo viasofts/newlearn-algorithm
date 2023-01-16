@@ -695,9 +695,6 @@ class Yolov5:
         if os.path.exists(save_path):
             shutil.rmtree(save_path)
 
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-
         opt.world_size = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
         opt.global_rank = int(os.environ["RANK"]) if "RANK" in os.environ else -1
 
