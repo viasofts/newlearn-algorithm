@@ -761,7 +761,7 @@ class Yolov5:
                 logger.info(
                     f'Start Tensorboard with "tensorboard --logdir {opt.project}", view at http://localhost:6006/'
                 )
-                # tb_writer = SummaryWriter(save_path)  # Tensorboard
+                tb_writer = SummaryWriter(save_path)  # Tensorboard
 
             self.train(hyp, opt, device, tb_writer, wandb)
             print("end train")
