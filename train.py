@@ -130,7 +130,6 @@ class Yolov5:
         results_file = os.path.join(save_dir, "results.txt")
 
         if not os.path.isdir(save_dir):
-            print(save_dir)
             os.makedirs(save_dir)
 
         # Save run settings
@@ -668,7 +667,7 @@ class Yolov5:
         opt.hyp = self.hyp
         opt.name = "exp"
         opt.entity = None
-        opt.local_rank = 7
+        opt.local_rank = int(os.getenv("LOCAL_RANK", -1))
         opt.workers = 0
         opt.device = ""
         opt.bucket = ""
