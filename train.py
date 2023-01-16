@@ -128,8 +128,9 @@ class Yolov5:
         last = os.path.join(wdir, "last.pt")
         best = os.path.join(wdir, "best.pt")
         results_file = os.path.join(save_dir, "results.txt")
-        if not os.path.isdir(save_dir):
-            os.makedirs(save_dir)
+
+        # if not os.path.isdir(save_dir):
+        #    os.makedirs(save_dir)
 
         # Save run settings
         hyp_yaml_path = os.path.join(save_dir, "hyp.yaml")
@@ -138,7 +139,6 @@ class Yolov5:
         with open(hyp_yaml_path, "w") as f:
             yaml.dump(hyp, f, sort_keys=False)
         with open(opt_yaml_path, "w") as f:
-
             yaml.dump(vars(opt), f, sort_keys=False)
 
         # Configure
