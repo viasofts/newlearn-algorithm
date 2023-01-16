@@ -667,7 +667,7 @@ class Yolov5:
         opt.hyp = self.hyp
         opt.name = "exp"
         opt.entity = None
-        opt.local_rank = 8
+        opt.local_rank = 7
         opt.workers = 0
         opt.device = ""
         opt.bucket = ""
