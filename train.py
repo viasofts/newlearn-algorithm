@@ -406,7 +406,7 @@ class Yolov5:
 
             if rank != -1:
                 dataloader.sampler.set_epoch(epoch)
-            temp_pbar = enumerate(dataloader)
+            pbar = enumerate(dataloader)
 
             logger.info(("\n" + "%10s" * 8) % ("Epoch", "gpu_mem", "box", "obj", "cls", "total", "targets", "img_size"))
 
@@ -422,7 +422,7 @@ class Yolov5:
                 "batch",
                 "time",
             )
-            print(rank)
+
             if rank in [-1, 0]:
                 print("------pbar")
                 pbar = tqdm(temp_pbar, total=nb)  # progress bar
