@@ -420,8 +420,9 @@ class Yolov5:
                 "batch",
                 "time",
             )
-
+            pbar = None
             if rank in [-1, 0]:
+                print("------pbar")
                 pbar = tqdm(temp_pbar, total=nb)  # progress bar
 
             optimizer.zero_grad()
