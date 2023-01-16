@@ -128,9 +128,11 @@ class Yolov5:
         last = os.path.join(wdir, "last.pt")
         best = os.path.join(wdir, "best.pt")
         results_file = os.path.join(save_dir, "results.txt")
-
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
+        try:
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+        except:
+            pass
 
         # Save run settings
         hyp_yaml_path = os.path.join(save_dir, "hyp.yaml")
