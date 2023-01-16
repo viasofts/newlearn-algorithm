@@ -425,7 +425,7 @@ class Yolov5:
 
             if rank in [-1, 0]:
                 print("------pbar")
-                pbar = tqdm(temp_pbar, total=nb)  # progress bar
+                pbar = tqdm(pbar, total=nb)  # progress bar
 
             optimizer.zero_grad()
             # log time
