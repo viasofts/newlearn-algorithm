@@ -612,7 +612,11 @@ class Yolov5:
                     del ckpt
 
             # 장기간 훈련시 DB연결이 끊리게 되는데 다시 연결
-            plot_results(save_dir=save_dir)
+            try:
+                plot_results(save_dir=save_dir)
+                print("plot succesee")
+            except:
+                pass
             # end epoch ----------------------------------------------------------------------------------------------------
             print("=============================================================end epoch")
 
