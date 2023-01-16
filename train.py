@@ -26,7 +26,24 @@ import test  # import test.py to get mAP after each epoch
 from models.yolo import Model
 from utils.autoanchor import check_anchors
 from utils.datasets import create_dataloader
-from utils.general import labels_to_class_weights, increment_path, labels_to_image_weights, init_seeds, fitness, strip_optimizer, get_latest_run, check_dataset, check_file, check_git_status, check_img_size, check_requirements, print_mutation, set_logging, one_cycle, colorstr
+from utils.general import (
+    labels_to_class_weights,
+    increment_path,
+    labels_to_image_weights,
+    init_seeds,
+    fitness,
+    strip_optimizer,
+    get_latest_run,
+    check_dataset,
+    check_file,
+    check_git_status,
+    check_img_size,
+    check_requirements,
+    print_mutation,
+    set_logging,
+    one_cycle,
+    colorstr,
+)
 
 from utils.loss import ComputeLoss
 from utils.plots import plot_images, plot_labels, plot_results, plot_evolution
@@ -35,6 +52,7 @@ from utils.plots import plot_results_csv
 import shutil
 
 logger = logging.getLogger(__name__)
+
 
 class Yolov5:
     def __init__(
@@ -95,7 +113,14 @@ class Yolov5:
     def train(self, hyp, opt, device, tb_writer=None, wandb=None):
         logger.info(colorstr("hyperparameters: ") + ", ".join(f"{k}={v}" for k, v in hyp.items()))
 
-        save_dir, epochs, batch_size, total_batch_size, weights, rank = Path(opt.save_dir), opt.epochs, opt.batch_size, opt.total_batch_size, opt.weights, opt.global_rank
+        save_dir, epochs, batch_size, total_batch_size, weights, rank = (
+            Path(opt.save_dir),
+            opt.epochs,
+            opt.batch_size,
+            opt.total_batch_size,
+            opt.weights,
+            opt.global_rank,
+        )
 
         # Directories
         wdir = Path(os.path.join(self.root_dir, "data")) / "weights"
@@ -146,7 +171,9 @@ class Yolov5:
             state_dict = ckpt["model"].float().state_dict()  # to FP32
             state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
             model.load_state_dict(state_dict, strict=False)  # load
-            logger.info("Transferred %g/%g items from %s" % (len(state_dict), len(model.state_dict()), weights))  # report
+            logger.info(
+                "Transferred %g/%g items from %s" % (len(state_dict), len(model.state_dict()), weights)
+            )  # report
         else:
             model = Model(opt.cfg, ch=3, nc=nc).to(device)  # create
 
@@ -176,7 +203,9 @@ class Yolov5:
                 pg1.append(v.weight)  # apply decay
         if opt.adam:
             # optimizer = optim.Adam(pg0, lr=hyp["lr0"], betas=(hyp["momentum"], 0.999))  # adjust beta1 to momentum
-            optimizer = optim.Adam(pg0, lr=self.learning_rate, betas=(hyp["momentum"], 0.999))  # adjust beta1 to momentum
+            optimizer = optim.Adam(
+                pg0, lr=self.learning_rate, betas=(hyp["momentum"], 0.999)
+            )  # adjust beta1 to momentum
         else:
             # optimizer = optim.SGD(pg0, lr=hyp["lr0"], momentum=hyp["momentum"], nesterov=True)
             optimizer = optim.SGD(pg0, lr=self.learning_rate, momentum=hyp["momentum"], nesterov=True)
@@ -195,7 +224,13 @@ class Yolov5:
         # Logging
         if rank in [-1, 0] and wandb and wandb.run is None:
             opt.hyp = hyp  # add hyperparameters
-            wandb_run = wandb.init(config=opt, resume="allow", project="YOLOv5" if opt.project == "runs/train" else Path(opt.project).stem, name=save_dir.stem, id=ckpt.get("wandb_id") if "ckpt" in locals() else None)
+            wandb_run = wandb.init(
+                config=opt,
+                resume="allow",
+                project="YOLOv5" if opt.project == "runs/train" else Path(opt.project).stem,
+                name=save_dir.stem,
+                id=ckpt.get("wandb_id") if "ckpt" in locals() else None,
+            )
         loggers = {"wandb": wandb}  # loggers dict
 
         # Resume
@@ -216,7 +251,10 @@ class Yolov5:
             if opt.resume:
                 assert start_epoch > 0, "%s training to %g epochs is finished, nothing to resume." % (weights, epochs)
             if epochs < start_epoch:
-                logger.info("%s has been trained for %g epochs. Fine-tuning for %g additional epochs." % (weights, ckpt["epoch"], epochs))
+                logger.info(
+                    "%s has been trained for %g epochs. Fine-tuning for %g additional epochs."
+                    % (weights, ckpt["epoch"], epochs)
+                )
                 epochs += ckpt["epoch"]  # finetune additional epochs
 
             del ckpt, state_dict
@@ -244,16 +282,53 @@ class Yolov5:
 
         # Trainloader
         with torch.no_grad():
-            dataloader, dataset = create_dataloader(train_path, imgsz, batch_size, gs, opt, hyp=hyp, augment=True, cache=opt.cache_images, rect=opt.rect, rank=rank, world_size=opt.world_size, workers=opt.workers, image_weights=opt.image_weights, quad=opt.quad, prefix=colorstr("train: "))
+            dataloader, dataset = create_dataloader(
+                train_path,
+                imgsz,
+                batch_size,
+                gs,
+                opt,
+                hyp=hyp,
+                augment=True,
+                cache=opt.cache_images,
+                rect=opt.rect,
+                rank=rank,
+                world_size=opt.world_size,
+                workers=opt.workers,
+                image_weights=opt.image_weights,
+                quad=opt.quad,
+                prefix=colorstr("train: "),
+            )
 
         mlc = np.concatenate(dataset.labels, 0)[:, 0].max()  # max label class
         nb = len(dataloader)  # number of batches
-        assert mlc < nc, "Label class %g exceeds nc=%g in %s. Possible class labels are 0-%g" % (mlc, nc, opt.data, nc - 1)
+        assert mlc < nc, "Label class %g exceeds nc=%g in %s. Possible class labels are 0-%g" % (
+            mlc,
+            nc,
+            opt.data,
+            nc - 1,
+        )
         # Process 0
         if rank in [-1, 0]:
             ema.updates = start_epoch * nb // accumulate  # set EMA updates
             with torch.no_grad():
-                testloader = create_dataloader(test_path, imgsz_test, total_batch_size, gs, opt, hyp=hyp, cache=opt.cache_images and not opt.notest, rect=True, rank=-1, world_size=opt.world_size, workers=opt.workers, pad=0.5, prefix=colorstr("val: "))[0]  # testloader
+                testloader = create_dataloader(
+                    test_path,
+                    imgsz_test,
+                    total_batch_size,
+                    gs,
+                    opt,
+                    hyp=hyp,
+                    cache=opt.cache_images and not opt.notest,
+                    rect=True,
+                    rank=-1,
+                    world_size=opt.world_size,
+                    workers=opt.workers,
+                    pad=0.5,
+                    prefix=colorstr("val: "),
+                )[
+                    0
+                ]  # testloader
 
             if not opt.resume:
                 labels = np.concatenate(dataset.labels, 0)
@@ -292,9 +367,16 @@ class Yolov5:
         scheduler.last_epoch = start_epoch - 1  # do not move
         scaler = amp.GradScaler(enabled=cuda)
         compute_loss = ComputeLoss(model)  # init loss class
-        logger.info(f"Image sizes {imgsz} train, {imgsz_test} test\n" f"Using {dataloader.num_workers} dataloader workers\n" f"Logging results to {save_dir}\n" f"Starting training for {epochs} epochs...")
+        logger.info(
+            f"Image sizes {imgsz} train, {imgsz_test} test\n"
+            f"Using {dataloader.num_workers} dataloader workers\n"
+            f"Logging results to {save_dir}\n"
+            f"Starting training for {epochs} epochs..."
+        )
 
-        for epoch in range(start_epoch, epochs):  # epoch ------------------------------------------------------------------
+        for epoch in range(
+            start_epoch, epochs
+        ):  # epoch ------------------------------------------------------------------
             start_time = time.time()
             with torch.no_grad():
                 model.train()
@@ -325,7 +407,18 @@ class Yolov5:
 
             logger.info(("\n" + "%10s" * 8) % ("Epoch", "gpu_mem", "box", "obj", "cls", "total", "targets", "img_size"))
 
-            p = ("\n" + "%10s" * 10) % ("Epoch", "gpu_mem", "box", "obj", "cls", "total", "targets", "img_size", "batch", "time")
+            p = ("\n" + "%10s" * 10) % (
+                "Epoch",
+                "gpu_mem",
+                "box",
+                "obj",
+                "cls",
+                "total",
+                "targets",
+                "img_size",
+                "batch",
+                "time",
+            )
 
             if rank in [-1, 0]:
                 pbar = tqdm(temp_pbar, total=nb)  # progress bar
@@ -335,7 +428,10 @@ class Yolov5:
             # pbr_len = len(pbar)
             # last_step_time = time.time()
 
-            for i, (imgs, targets, paths, _) in pbar:  # batch -------------------------------------------------------------
+            for (
+                i,
+                (imgs, targets, paths, _),
+            ) in pbar:  # batch -------------------------------------------------------------
                 ni = i + nb * epoch  # number integrated batches (since train start)
 
                 imgs = imgs.to(device, non_blocking=True).float() / 255.0  # uint8 to float32, 0-255 to 0.0-1.0
@@ -351,7 +447,9 @@ class Yolov5:
 
                     for j, x in enumerate(optimizer.param_groups):
                         # bias lr falls from 0.1 to lr0, all other lrs rise from 0.0 to lr0
-                        x["lr"] = np.interp(ni, xi, [hyp["warmup_bias_lr"] if j == 2 else 0.0, x["initial_lr"] * lf(epoch)])
+                        x["lr"] = np.interp(
+                            ni, xi, [hyp["warmup_bias_lr"] if j == 2 else 0.0, x["initial_lr"] * lf(epoch)]
+                        )
 
                         if "momentum" in x:
                             x["momentum"] = np.interp(ni, xi, [hyp["warmup_momentum"], hyp["momentum"]])
@@ -362,7 +460,9 @@ class Yolov5:
                     sf = sz / max(imgs.shape[2:])  # scale factor
 
                     if sf != 1:
-                        ns = [math.ceil(x * sf / gs) * gs for x in imgs.shape[2:]]  # new shape (stretched to gs-multiple)
+                        ns = [
+                            math.ceil(x * sf / gs) * gs for x in imgs.shape[2:]
+                        ]  # new shape (stretched to gs-multiple)
                         imgs = F.interpolate(imgs, size=ns, mode="bilinear", align_corners=False)
 
                 # Forward
@@ -390,7 +490,13 @@ class Yolov5:
                 if rank in [-1, 0]:
                     mloss = (mloss * i + loss_items) / (i + 1)  # update mean losses
                     mem = "%.3gG" % (torch.cuda.memory_reserved() / 1e9 if torch.cuda.is_available() else 0)  # (GB)
-                    s = ("%10s" * 2 + "%10.4g" * 6) % ("%g/%g" % (epoch, epochs - 1), mem, *mloss, targets.shape[0], imgs.shape[-1])
+                    s = ("%10s" * 2 + "%10.4g" * 6) % (
+                        "%g/%g" % (epoch, epochs - 1),
+                        mem,
+                        *mloss,
+                        targets.shape[0],
+                        imgs.shape[-1],
+                    )
 
                     pbar.set_description(s)
 
@@ -402,7 +508,16 @@ class Yolov5:
                         #     tb_writer.add_image(f, result, dataformats='HWC', global_step=epoch)
                         #     tb_writer.add_graph(model, imgs)  # add model to tensorboard
                     elif plots and ni == 10 and wandb:
-                        wandb.log({"Mosaics": [wandb.Image(str(x), caption=x.name) for x in save_dir.glob("train*.jpg") if x.exists()]}, commit=False)
+                        wandb.log(
+                            {
+                                "Mosaics": [
+                                    wandb.Image(str(x), caption=x.name)
+                                    for x in save_dir.glob("train*.jpg")
+                                    if x.exists()
+                                ]
+                            },
+                            commit=False,
+                        )
 
                 # end batch ------------------------------------------------------------------------------------------------
             end_time = time.time()
@@ -424,7 +539,19 @@ class Yolov5:
 
                 if not opt.notest or final_epoch:  # Calculate mAP
                     with torch.no_grad():
-                        results, maps, times = test.test(opt.data, batch_size=total_batch_size, imgsz=imgsz_test, model=ema.ema, single_cls=opt.single_cls, dataloader=testloader, save_dir=save_dir, verbose=nc < 50 and final_epoch, plots=plots and final_epoch, log_imgs=opt.log_imgs if wandb else 0, compute_loss=compute_loss)
+                        results, maps, times = test.test(
+                            opt.data,
+                            batch_size=total_batch_size,
+                            imgsz=imgsz_test,
+                            model=ema.ema,
+                            single_cls=opt.single_cls,
+                            dataloader=testloader,
+                            save_dir=save_dir,
+                            verbose=nc < 50 and final_epoch,
+                            plots=plots and final_epoch,
+                            log_imgs=opt.log_imgs if wandb else 0,
+                            compute_loss=compute_loss,
+                        )
 
                 # Write
                 with open(results_file, "a") as f:
@@ -433,7 +560,21 @@ class Yolov5:
                     os.system("gsutil cp %s gs://%s/results/results%s.txt" % (results_file, opt.bucket, opt.name))
 
                 # Log
-                tags = ["train/box_loss", "train/obj_loss", "train/cls_loss", "metrics/precision", "metrics/recall", "metrics/mAP_0.5", "metrics/mAP_0.5:0.95", "val/box_loss", "val/obj_loss", "val/cls_loss", "x/lr0", "x/lr1", "x/lr2"]  # train loss  # val loss  # params
+                tags = [
+                    "train/box_loss",
+                    "train/obj_loss",
+                    "train/cls_loss",
+                    "metrics/precision",
+                    "metrics/recall",
+                    "metrics/mAP_0.5",
+                    "metrics/mAP_0.5:0.95",
+                    "val/box_loss",
+                    "val/obj_loss",
+                    "val/cls_loss",
+                    "x/lr0",
+                    "x/lr1",
+                    "x/lr2",
+                ]  # train loss  # val loss  # params
 
                 for x, tag in zip(list(mloss[:-1]) + list(results) + lr, tags):
                     # if tb_writer:
@@ -451,7 +592,14 @@ class Yolov5:
                 if save:
                     with open(results_file, "r") as f:  # create checkpoint
                         with torch.no_grad():
-                            ckpt = {"epoch": epoch, "best_fitness": best_fitness, "training_results": f.read(), "model": ema.ema, "optimizer": None if final_epoch else optimizer.state_dict(), "wandb_id": wandb_run.id if wandb else None}
+                            ckpt = {
+                                "epoch": epoch,
+                                "best_fitness": best_fitness,
+                                "training_results": f.read(),
+                                "model": ema.ema,
+                                "optimizer": None if final_epoch else optimizer.state_dict(),
+                                "wandb_id": wandb_run.id if wandb else None,
+                            }
 
                     # Save last, best and delete
                     torch.save(ckpt, last)
@@ -498,9 +646,13 @@ class Yolov5:
         parser.add_argument("--quad", action="store_true", help="quad dataloader")
         parser.add_argument("--linear-lr", action="store_true", help="linear LR")
         parser.add_argument("--upload_dataset", action="store_true", help="Upload dataset as W&B artifact table")
-        parser.add_argument("--bbox_interval", type=int, default=-1, help="Set bounding-box image logging interval for W&B")
+        parser.add_argument(
+            "--bbox_interval", type=int, default=-1, help="Set bounding-box image logging interval for W&B"
+        )
         parser.add_argument("--save_period", type=int, default=-1, help='Log model after every "save_period" epoch')
-        parser.add_argument("--artifact_alias", type=str, default="latest", help="version of dataset artifact to be used")
+        parser.add_argument(
+            "--artifact_alias", type=str, default="latest", help="version of dataset artifact to be used"
+        )
 
         opt = parser
 
@@ -559,7 +711,13 @@ class Yolov5:
             apriori = opt.global_rank, opt.local_rank
             with open(Path(ckpt).parent.parent / "opt.yaml") as f:
                 opt = argparse.Namespace(**yaml.load(f, Loader=yaml.SafeLoader))  # replace
-            opt.cfg, opt.weights, opt.resume, opt.batch_size, opt.global_rank, opt.local_rank = "", ckpt, True, opt.total_batch_size, *apriori  # reinstate
+            opt.cfg, opt.weights, opt.resume, opt.batch_size, opt.global_rank, opt.local_rank = (
+                "",
+                ckpt,
+                True,
+                opt.total_batch_size,
+                *apriori,
+            )  # reinstate
             logger.info("Resuming training from %s" % ckpt)
         else:
             # opt.hyp = opt.hyp or ('hyp.finetune.yaml' if opt.weights else 'hyp.scratch.yaml')
@@ -567,7 +725,9 @@ class Yolov5:
             assert len(opt.cfg) or len(opt.weights), "either --cfg or --weights must be specified"
             opt.img_size.extend([opt.img_size[-1]] * (2 - len(opt.img_size)))  # extend to 2 sizes (train, test)
             opt.name = "evolve" if opt.evolve else opt.name
-            opt.save_dir = increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok | opt.evolve)  # increment run
+            opt.save_dir = increment_path(
+                Path(opt.project) / opt.name, exist_ok=opt.exist_ok | opt.evolve
+            )  # increment run
 
         # DDP mode
         opt.total_batch_size = opt.batch_size
@@ -598,7 +758,9 @@ class Yolov5:
         if not opt.evolve:
             tb_writer = None  # init loggers
             if opt.global_rank in [-1, 0]:
-                logger.info(f'Start Tensorboard with "tensorboard --logdir {opt.project}", view at http://localhost:6006/')
+                logger.info(
+                    f'Start Tensorboard with "tensorboard --logdir {opt.project}", view at http://localhost:6006/'
+                )
                 # tb_writer = SummaryWriter(save_path)  # Tensorboard
 
             self.train(hyp, opt, device, tb_writer, wandb)
@@ -684,7 +846,10 @@ class Yolov5:
 
             # Plot results
             plot_evolution(yaml_file)
-            print(f"Hyperparameter evolution complete. Best results saved as: {yaml_file}\n" f"Command to train a new model with these hyperparameters: $ python train.py --hyp {yaml_file}")
+            print(
+                f"Hyperparameter evolution complete. Best results saved as: {yaml_file}\n"
+                f"Command to train a new model with these hyperparameters: $ python train.py --hyp {yaml_file}"
+            )
 
 
 def parse_opt():
@@ -693,16 +858,18 @@ def parse_opt():
     parser.add_argument("--batch-size", type=int, default=4, help="total batch size for all GPUs")
     parser.add_argument("--learning-rate", type=float, default=0.01)
     parser.add_argument("--algorithm", type=str, default="yolov5")
+    parser.add_argument("--local_rank", type=int, default=-1, help="DDP parameter, do not modify")
     opt = parser.parse_args()
 
     return opt
 
+
 if __name__ == "__main__":
     opt = parse_opt()
-    
+
     data = os.path.join(os.getcwd(), "data/data.yaml")
     hyp = os.path.join(os.getcwd(), "data/hyp.scratch.yaml")
-             
+
     weights = os.path.join(os.getcwd(), "data", "yolov5s.pt")  # pretrained 가중치
 
     # Yolov5 네트워크가 저장된 confing 파일
@@ -711,16 +878,15 @@ if __name__ == "__main__":
     project = os.path.join("data", "run", "train")  # 훈련 결과를 저장할 폴더
 
     model = Yolov5(
-        epochs=opt.epochs, 
-        batch_size=opt.batch_size, 
-        data=data, 
-        weights=weights, 
-        cfg=cfg, 
-        hyp=hyp, 
-        project=project, 
-        learning_rate=opt.learning_rate
+        epochs=opt.epochs,
+        batch_size=opt.batch_size,
+        data=data,
+        weights=weights,
+        cfg=cfg,
+        hyp=hyp,
+        project=project,
+        learning_rate=opt.learning_rate,
     )
-    
-    model.main()
 
+    model.main()
 
