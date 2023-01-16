@@ -129,8 +129,9 @@ class Yolov5:
         best = os.path.join(wdir, "best.pt")
         results_file = os.path.join(save_dir, "results.txt")
 
-        # if not os.path.isdir(save_dir):
-        #    os.makedirs(save_dir)
+        if not os.path.isdir(save_dir):
+            print(save_dir)
+            os.makedirs(save_dir)
 
         # Save run settings
         hyp_yaml_path = os.path.join(save_dir, "hyp.yaml")
@@ -694,7 +695,6 @@ class Yolov5:
 
         if os.path.exists(save_path):
             shutil.rmtree(save_path)
-            os.makedirs(save_path)
 
         opt.world_size = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
         opt.global_rank = int(os.environ["RANK"]) if "RANK" in os.environ else -1
